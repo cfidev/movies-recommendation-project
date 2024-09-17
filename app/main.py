@@ -1,5 +1,8 @@
 from fastapi import FastAPI, HTTPException
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
 import os
 
 app = FastAPI()
@@ -108,3 +111,44 @@ def get_director(director: str):
         })
     
     return resultados
+
+
+# Limpiar los datos
+df['title'] = df['title'].fillna('')
+df['vote_average'] = df['vote_average'].fillna(0)
+df['popularity'] = df['popularity'].fillna(0)
+
+# Vectorizador TF-IDF para calcular la similitud de títulos
+vectorizer = TfidfVectorizer(stop_words='english')
+
+# Entrenar el vectorizador con los títulos
+tfidf_matrix = vectorizer.fit_transform(df['title'])
+
+# Calcular la matriz de similitud de coseno
+cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+# Índice invertido para encontrar películas por título
+indices = pd.Series(df.index, index=df['title'].str.lower()).drop_duplicates()
+
+# Endpoint de recomendación
+@app.get("/recomendacion/{titulo}")
+def recomendacion(titulo: str):
+    # Verificar si la película existe en el dataset
+    idx = indices.get(titulo.lower())
+    if idx is None:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+    
+    # Calcular la similitud entre la película seleccionada y todas las demás
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    
+    # Ordenar las películas por la similitud de coseno
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    
+    # Obtener los índices de las 5 películas más similares (excluyendo la película original)
+    sim_scores = sim_scores[1:6]  # Saltar la primera, que es la película misma
+    
+    # Obtener los títulos de las películas similares
+    movie_indices = [i[0] for i in sim_scores]
+    recommended_movies = df['title'].iloc[movie_indices].tolist()
+    
+    return {"recomendaciones": recommended_movies}
