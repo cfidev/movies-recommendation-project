@@ -9,3 +9,6 @@ __pycache__/
 
 # Ignorar configuraciones locales de VSCode
 .vscode/
+
+# Ignorar el archivo CSV original
+data/movies_dataset.csv
