@@ -112,3 +112,27 @@ def get_director(director: str):
         return resultados
     
     raise HTTPException(status_code=404, detail="Director no encontrado")
+
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Entrenamiento del modelo de recomendación
+vectorizer = TfidfVectorizer(stop_words='english')
+tfidf_matrix = vectorizer.fit_transform(df['title'])
+
+@app.get("/recomendacion/{titulo}")
+def recomendacion(titulo: str):
+    # Verificar si el título existe
+    if titulo not in df['title'].values:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+    
+    # Calcular similitud
+    idx = df[df['title'] == titulo].index[0]
+    cos_similarities = cosine_similarity(tfidf_matrix[idx], tfidf_matrix).flatten()
+    
+    # Obtener las 5 películas más similares
+    similar_indices = cos_similarities.argsort()[-6:-1][::-1]  # Ignorar la propia película
+    recomendaciones = df['title'].iloc[similar_indices].values.tolist()
+    
+    return {"recomendaciones": recomendaciones}
