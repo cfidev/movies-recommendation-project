@@ -90,6 +90,7 @@ def get_actor(actor: str):
     raise HTTPException(status_code=404, detail="Actor no encontrado")
 
 # 6. Endpoint: Información de un director (simulado)
+
 @app.get("/get_director/{director}")
 def get_director(director: str):
     if director.lower() == "director":
@@ -114,8 +115,9 @@ def get_director(director: str):
     raise HTTPException(status_code=404, detail="Director no encontrado")
 
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+#Endpoint de recomendación
+# Reemplazar valores nulos en la columna 'title'
+df['title'] = df['title'].fillna('')
 
 # Entrenamiento del modelo de recomendación
 vectorizer = TfidfVectorizer(stop_words='english')
