@@ -1,33 +1,78 @@
-# Movies Recommendation API
+# Movies Recommendation Project
 
-Este proyecto es una API para un sistema de recomendación de películas, desarrollado con **FastAPI**. Utiliza un sistema de recomendación basado en la similitud entre películas para recomendar hasta 5 películas similares a una película dada. También incluye otros endpoints que permiten consultar datos sobre películas, actores, directores, y análisis de datos estadísticos de películas.
+Este es un proyecto de recomendación de películas basado en un modelo de machine learning utilizando **FastAPI** como backend y **scikit-learn** para el modelo de recomendación. El sistema de recomendación sugiere películas similares basándose en la similitud de los títulos y otras características de las películas.
 
-## Descripción
+## Estructura del Proyecto
 
-El objetivo de esta API es proporcionar una manera eficiente de recomendar películas similares basadas en títulos introducidos por los usuarios. Utiliza la similitud de coseno en los títulos de las películas para hacer las recomendaciones. También contiene endpoints adicionales que permiten obtener información como:
-- Cantidad de películas estrenadas en un mes específico.
-- Cantidad de películas estrenadas en un día de la semana.
-- Detalles sobre la puntuación y cantidad de votos de películas.
-- Información sobre actores y directores, incluyendo métricas de éxito basadas en retorno.
+El proyecto está organizado de la siguiente manera:
 
-## Funcionalidades
+- **app**: Contiene la lógica de la API construida con FastAPI.
+- **data**: Contiene el archivo `movies_dataset.parquet` con los datos de las películas.
+- **notebooks**: Contiene los notebooks para análisis exploratorio de datos (EDA) y otras tareas de preprocesamiento.
+- **main.py**: El archivo principal que define los endpoints de la API.
+- **requirements.txt**: Lista de dependencias necesarias para ejecutar el proyecto.
 
-### Endpoints disponibles
+## Funcionalidades Principales
 
-1. **`/cantidad_filmaciones_mes/{mes}`**: Devuelve la cantidad de películas estrenadas en un mes dado (en español).
-2. **`/cantidad_filmaciones_dia/{dia}`**: Devuelve la cantidad de películas estrenadas en un día de la semana (en español).
-3. **`/score_titulo/{titulo}`**: Devuelve el título, el año de estreno y el score de una película específica.
-4. **`/votos_titulo/{titulo}`**: Devuelve el título, la cantidad de votos y el promedio de votos de una película (solo si tiene al menos 2000 votos).
-5. **`/get_actor/{actor}`**: Devuelve la cantidad de películas, el retorno total y el retorno promedio para un actor específico.
-6. **`/get_director/{director}`**: Devuelve una lista de películas dirigidas por un director, con detalles como fecha de lanzamiento, retorno, costo y ganancia.
-7. **`/recomendacion/{titulo}`**: Sistema de recomendación que devuelve una lista de 5 películas similares basadas en el título dado.
+El proyecto incluye los siguientes endpoints:
 
-## Tecnologías Utilizadas
+1. **GET** `/cantidad_filmaciones_mes/{mes}`:
+   - Devuelve la cantidad de películas estrenadas en el mes dado en español.
+   - Ejemplo: `/cantidad_filmaciones_mes/julio`
 
-- **Python 3.9+**
-- **FastAPI**: Framework principal para el desarrollo de la API.
-- **Uvicorn**: Servidor ASGI para desplegar la API.
-- **Pandas**: Para la manipulación de los datos.
-- **scikit-learn**: Para el cálculo de la similitud de coseno entre las películas.
-- **TfidfVectorizer**: Para vectorizar los títulos de las películas y calcular la similitud.
-- **Parquet**: Formato de archivo utilizado para almacenar los datos.
+2. **GET** `/cantidad_filmaciones_dia/{dia}`:
+   - Devuelve la cantidad de películas estrenadas en un día específico de la semana en español.
+   - Ejemplo: `/cantidad_filmaciones_dia/lunes`
+
+3. **GET** `/score_titulo/{titulo}`:
+   - Devuelve el score de una película específica, el año de estreno y el nombre.
+   - Ejemplo: `/score_titulo/Toy Story`
+
+4. **GET** `/votos_titulo/{titulo}`:
+   - Devuelve la cantidad de votos y el promedio de votos de una película, si tiene al menos 2000 valoraciones.
+   - Ejemplo: `/votos_titulo/Jumanji`
+
+5. **GET** `/get_actor/{actor}`:
+   - Simula la información de un actor, devolviendo la cantidad de películas en las que ha participado, retorno total y promedio.
+   - Ejemplo: `/get_actor/actor`
+
+6. **GET** `/get_director/{director}`:
+   - Simula la información de un director, devolviendo una lista de películas con su respectiva fecha de lanzamiento, retorno, costo y ganancia.
+   - Ejemplo: `/get_director/director`
+
+7. **GET** `/recomendacion/{titulo}`:
+   - Devuelve una lista de 5 películas similares a la ingresada utilizando un modelo de recomendación basado en similitud de títulos.
+   - Ejemplo: `/recomendacion/Toy Story`
+
+## Análisis Exploratorio de Datos (EDA)
+
+El EDA se ha realizado utilizando **Pandas**, **Seaborn** y **Matplotlib**. El análisis incluye:
+
+- Chequeo de valores nulos.
+- Chequeo de duplicados.
+- Tipos de datos.
+- Análisis estadístico.
+- Visualización de distribuciones de variables clave como `budget`, `revenue`.
+- Análisis de correlación entre variables numéricas.
+- Visualización de correlaciones multivariadas mediante `pairplot`.
+
+Los detalles del análisis pueden encontrarse en el notebook ubicado en la carpeta `notebooks`.
+
+## Modelo de Recomendación
+
+El sistema de recomendación está basado en la similitud de coseno entre los títulos de las películas. Utilicé `TfidfVectorizer` para convertir los títulos en una representación numérica y luego calculamos la similitud utilizando `cosine_similarity`.
+
+## Requerimientos
+
+El archivo `requirements.txt` contiene todas las dependencias necesarias para ejecutar este proyecto. Algunas de las principales son:
+
+- `fastapi`
+- `uvicorn`
+- `pandas`
+- `scikit-learn`
+- `seaborn`
+- `matplotlib`
+
+## Acceso del proyecto en Render
+
+https://movies-recommendation-project-ucon.onrender.com/docs
